@@ -8,6 +8,9 @@
 |--------|-------|
 | Jenkins | 8080 |
 | SonarQube | 9000 |
+| Argocd | 8050 |
+| Prometheus | 9090 |
+| Grafana | 3000 |
 
 ---
 
@@ -284,4 +287,115 @@ http://<EC2-PUBLIC-IP>:8050
 Username: admin
 Password: <output from Step 4>
 ```
+
+# 🚀 Install and Configure Prometheus & Grafana
+
+---
+
+## 📦 Prometheus
+
+### Step 1 — Add Prometheus Helm Repo and Update
+```bash
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+```
+
+### Step 2 — Create Monitoring Namespace
+```bash
+kubectl create ns monitoring
+```
+
+### Step 3 — Install Prometheus
+```bash
+helm install prometheus prometheus-community/prometheus \
+  --namespace monitoring
+```
+
+### Step 4 — Verify Services
+```bash
+kubectl get service -n monitoring
+```
+
+### Step 5 — Expose Prometheus Server
+```bash
+kubectl expose service prometheus-server -n monitoring \
+  --type=NodePort \
+  --target-port=9090 \
+  --name=prometheus-server-ext
+```
+
+### Step 6 — Port Forward Prometheus
+```bash
+nohup kubectl port-forward -n monitoring svc/prometheus-server 9090:80 \
+  --address 0.0.0.0 > prometheus.log 2>&1 &
+```
+
+### Step 7 — Access Prometheus UI
+```
+http://<EC2-PUBLIC-IP>:9090
+```
+
+---
+
+## 📊 Grafana
+
+### Step 1 — Add Grafana Helm Repo and Update
+```bash
+helm repo add grafana https://grafana.github.io/helm-charts
+helm repo update
+```
+
+### Step 2 — Install Grafana
+```bash
+helm install grafana grafana/grafana \
+  --namespace monitoring
+```
+
+### Step 3 — Verify Services
+```bash
+kubectl get service -n monitoring
+```
+
+### Step 4 — Expose Grafana Service
+```bash
+kubectl expose service grafana -n monitoring \
+  --type=NodePort \
+  --target-port=3000 \
+  --name=grafana-ext
+```
+
+### Step 5 — Port Forward Grafana
+```bash
+nohup kubectl port-forward -n monitoring svc/grafana 3000:80 \
+  --address 0.0.0.0 > grafana.log 2>&1 &
+```
+
+### Step 6 — Get Grafana Admin Password
+```bash
+kubectl get secret --namespace monitoring grafana \
+  -o jsonpath="{.data.admin-password}" | base64 --decode
+```
+
+### Step 7 — Access Grafana UI
+```
+http://<EC2-PUBLIC-IP>:3000
+Username: admin
+Password: <output from Step 6>
+```
+
+---
+
+## 🔗 Connect Prometheus as Grafana Data Source
+
+1. Login to Grafana
+2. Click **Add data source → Prometheus**
+3. Set URL to:
+```
+http://prometheus-server.monitoring.svc.cluster.local
+```
+
+5. Click **Save & Test** ✅
+
+---
+
 
