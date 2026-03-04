@@ -6,7 +6,7 @@
 
 | Service | Port |
 |--------|-------|
-| Jenkins | 8090 |
+| Jenkins | 8080 |
 | SonarQube | 9000 |
 
 ---
@@ -42,20 +42,10 @@ sudo apt update
 sudo apt install jenkins -y
 ```
 
----
-
-# 🔁 Change Jenkins Port (8080 → 8090)
-
-```bash
-sudo sed -i 's/Environment="JENKINS_PORT=8080"/Environment="JENKINS_PORT=8090"/' /usr/lib/systemd/system/jenkins.service
-sudo systemctl daemon-reload
-sudo systemctl restart jenkins
-```
-
 Open:
 
 ```
-http://<EC2-IP>:8090
+http://<EC2-IP>:8080
 ```
 
 ---
@@ -75,6 +65,16 @@ sudo cat /var/lib/jenkins/secrets/initialAdminPassword
 ```
 
 ---
+
+# Jenkins Plugins you need to run this project
+1. Docker Pipeline
+2. Sonarqube Scanner
+3. SCM Skip
+
+# Authentication you need to add in jenkins as credential
+1. Dockerhub as Username and Password
+2. Sonarqube as Secret Text
+3. Github as Secret Text
 
 # 📊 Install SonarQube
 
@@ -141,7 +141,15 @@ Open:
 http://<EC2-IP>:9000
 ```
 
+# 🔑 Get Sonarqube Password
+
+```bash
+username : admin
+password : admin
+```
 ---
+
+After this, you can give your own password.
 
 # 🟢 Install Node.js 18
 
@@ -161,33 +169,26 @@ npm -v
 
 # 🔍 Install Sonar Scanner
 
+## Step 1 — Download and Install
 ```bash
 wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
 unzip sonar-scanner-cli-5.0.1.3006-linux.zip
 sudo mv sonar-scanner-5.0.1.3006-linux /opt/sonar-scanner
 ```
 
-Add to PATH:
-
-```bash
-echo 'export PATH=$PATH:/opt/sonar-scanner/bin' | sudo tee -a /etc/environment
-source /etc/environment
-```
-
-Verify:
-
-```bash
-sonar-scanner --version
-```
-
-Allow Jenkins access:
-
+## Step 2 — Create Symlink
 ```bash
 sudo ln -s /opt/sonar-scanner/bin/sonar-scanner /usr/local/bin/sonar-scanner
-sudo -u jenkins sonar-scanner --version
 ```
 
----
+## Step 3 — Verify Installation
+```bash
+# verify for ubuntu user
+sonar-scanner --version
+
+# verify for jenkins user
+sudo -u jenkins sonar-scanner --version
+```
 
 # 🔗 SonarQube → Jenkins Webhook
 
@@ -247,15 +248,40 @@ Content type: application/json
 Events: Just the push event
 ```
 
----
+# 🚀 Install and Configure ArgoCD
 
-# ✅ Final Results
+## Step 1 — Create ArgoCD Namespace and Install
+```bash
+kubectl create namespace argocd
+kubectl apply -n argocd --server-side --force-conflicts -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+```
 
-After setup:
+## Step 2 — Wait for Pods to be Ready
+```bash
+kubectl get pods -n argocd -w
+```
 
-- Jenkins → http://IP:8090
-- SonarQube → http://IP:9000
-- GitHub push → triggers Jenkins build
+## Step 3 — Change ArgoCD Server to NodePort
+```bash
+kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "NodePort"}}'
+```
 
----
+## Step 4 — Get ArgoCD Admin Password
+```bash
+kubectl -n argocd get secret argocd-initial-admin-secret \
+  -o jsonpath="{.data.password}" | base64 -d
+```
+
+## Step 5 — Port Forward ArgoCD Service
+```bash
+nohup kubectl port-forward -n argocd service/argocd-server 8050:80 --address 0.0.0.0 > port.log 2>&1 &
+```
+
+## Step 7 — Access ArgoCD UI
+```
+http://<EC2-PUBLIC-IP>:8050
+
+Username: admin
+Password: <output from Step 4>
+```
 
