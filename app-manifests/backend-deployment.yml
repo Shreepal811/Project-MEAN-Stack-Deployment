@@ -19,7 +19,7 @@ spec:
           command: ['sh', '-c', 'until nc -z mongo 27017; do echo waiting for mongo; sleep 2; done']
       containers:
         - name: backend
-          image: shreepalsingh/crud-dd-task-mean-app-backend:1.0.2
+          image: shreepalsingh/crud-dd-task-mean-app-backend:1.0.3
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
