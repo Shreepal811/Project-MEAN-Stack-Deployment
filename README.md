@@ -246,7 +246,7 @@ Settings → Webhooks → Add webhook
 Fill:
 
 ```
-Payload URL: http://<EC2-IP>:8090/github-webhook/
+Payload URL: http://<EC2-IP>:8080/github-webhook/
 Content type: application/json
 Events: Just the push event
 ```
