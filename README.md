@@ -72,12 +72,84 @@ sudo cat /var/lib/jenkins/secrets/initialAdminPassword
 # Jenkins Plugins you need to run this project
 1. Docker Pipeline
 2. Sonarqube Scanner
-3. SCM Skip
 
 # Authentication you need to add in jenkins as credential
 1. Dockerhub as Username and Password
-2. Sonarqube as Secret Text
-3. Github as Secret Text
+2. Github as Username and Password
+3. Sonarqube as Secret Text
+
+
+# 🔀 Configure Multibranch Pipeline
+
+## Step 1 — Create New Item
+```
+Jenkins → New Item
+→ Enter name: <pipeline-name>
+→ Select: Multibranch Pipeline
+→ Click OK
+```
+
+## Step 2 — Configure Branch Sources
+```
+Branch Sources → Add Source → GitHub
+→ Credentials: select your github credential
+→ Repository HTTPS URL: https://github.com/<your-username>/<your-repo>
+→ Click Validate ✅
+```
+
+## Step 3 — Discover Branches
+```
+Behaviours → Add → Filter by name (with regular expression)
+→ Regular Expression: main
+```
+
+> ⚠️ This ensures Jenkins only watches `main` branch and ignores `release-state`
+
+## Step 4 — Build Configuration
+```
+Build Configuration
+→ Mode: by Jenkinsfile
+→ Script Path: Jenkinsfile
+```
+
+## Step 5 — Scan Repository Triggers
+```
+Scan Repository Triggers
+→ Periodically if not otherwise run
+→ Interval: 1 minute
+```
+
+## Step 6 — Save and Scan
+```
+→ Click Save
+→ Click Scan Repository Now
+→ Jenkins will find main branch
+→ Creates job for main only ✅
+```
+
+## How it works
+```
+Push to main          → Jenkins builds ✅
+Push to release-state → Jenkins ignores ✅
+No infinite loop!     ✅
+```
+
+# 🔔 GitHub Webhook → Jenkins
+
+In your repo on GitHub:
+
+```
+Settings → Webhooks → Add webhook
+```
+
+Fill:
+
+```
+Payload URL: http://<EC2-IP>:8080/github-webhook/
+Content type: application/json
+Events: Just the push event
+```
+
 
 # 📊 Install SonarQube
 
@@ -205,7 +277,7 @@ Add:
 
 ```
 Name: jenkins
-URL: http://<EC2-IP>:8090/sonarqube-webhook/
+URL: http://<EC2-IP>:8080/sonarqube-webhook/
 ```
 
 ---
@@ -226,32 +298,13 @@ Token: <your-token>
 
 ---
 
-# 🔔 GitHub Webhook → Jenkins
-
-In your repo on GitHub:
-
-## Enable trigger in Jenkins
-
-```
-Job → Configure → Build Triggers
-✔ GitHub hook trigger for GITScm polling
-```
-
-## Add webhook
-
-```
-Settings → Webhooks → Add webhook
-```
-
-Fill:
-
-```
-Payload URL: http://<EC2-IP>:8080/github-webhook/
-Content type: application/json
-Events: Just the push event
-```
 
 # 🚀 Install and Configure ArgoCD
+
+# 📌 Pre-Requisites
+
+- kubernetes cluster
+- kubectl
 
 ## Step 1 — Create ArgoCD Namespace and Install
 ```bash
@@ -291,6 +344,14 @@ Password: <output from Step 4>
 # 🚀 Install and Configure Prometheus & Grafana
 
 ---
+
+# 📌 Pre-Requisites
+
+- helm
+```bash
+curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+helm version
+```
 
 ## 📦 Prometheus
 
