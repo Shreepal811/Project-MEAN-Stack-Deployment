@@ -5,7 +5,7 @@ pipeline {
     DOCKER_HUB_USER      = "shreepalsingh"
     BACKEND_IMAGE        = "${DOCKER_HUB_USER}/crud-dd-task-mean-app-backend"
     FRONTEND_IMAGE       = "${DOCKER_HUB_USER}/crud-dd-task-mean-app-frontend"
-    SONAR_URL            = "http://44.223.94.9:9000"
+    SONAR_URL            = "http://44.212.56.60:9000/"
     GIT_REPO_NAME        = "Project-MEAN-Stack-Deployment"
     GIT_USER_NAME        = "shreepal811"
   }
