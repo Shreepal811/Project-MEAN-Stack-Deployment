@@ -101,7 +101,6 @@ pipeline {
     stage('Update Deployment Files') {
       steps {
         sh 'git checkout origin/release-state -- app-manifests/'
-        // ✅ changed from string to usernamePassword
         withCredentials([usernamePassword(credentialsId: 'github', usernameVariable: 'GIT_USER', passwordVariable: 'GITHUB_TOKEN')]) {
           sh '''
             git config --global user.email "shreepalsingh811@gmail.com"
@@ -111,16 +110,13 @@ pipeline {
             sed -i "s|${BACKEND_IMAGE}:.*|${BACKEND_IMAGE}:${APP_VERSION}|g"  app-manifests/backend-deployment.yml
             sed -i "s|${FRONTEND_IMAGE}:.*|${FRONTEND_IMAGE}:${APP_VERSION}|g" app-manifests/frontend-deployment.yml
 
-            # clone release-state into separate temp folder
             rm -rf /tmp/release-state-repo
             git clone -b release-state https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} /tmp/release-state-repo
 
-            # copy only 3 files into temp folder
             cp version.txt /tmp/release-state-repo/
             cp app-manifests/backend-deployment.yml /tmp/release-state-repo/app-manifests/
             cp app-manifests/frontend-deployment.yml /tmp/release-state-repo/app-manifests/
 
-            # commit and push from temp folder
             cd /tmp/release-state-repo
             git add version.txt app-manifests/
             git commit -m "Release version ${APP_VERSION}"
