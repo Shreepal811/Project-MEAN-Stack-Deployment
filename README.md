@@ -51,6 +51,14 @@ Open:
 http://<EC2-IP>:8080
 ```
 
+![Jenkins Login Page Image](images/jenkins.png)
+
+
+# 🔑 Get Jenkins Admin Password
+
+```bash
+sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+```
 ---
 
 # 🔓 Give Jenkins Docker Access
@@ -61,22 +69,23 @@ sudo usermod -aG docker jenkins
 
 ---
 
-# 🔑 Get Jenkins Admin Password
-
-```bash
-sudo cat /var/lib/jenkins/secrets/initialAdminPassword
-```
-
 ---
 
 # Jenkins Plugins you need to run this project
 1. Docker Pipeline
 2. Sonarqube Scanner
 
+![Jenkins Docker plugin Image](images/jenkins_docker_plugin.png)
+![Jenkins Sonarqube Plugin Image](images/jenkins_sonarqube_plugin.png)
+
 # Authentication you need to add in jenkins as credential
 1. Dockerhub as Username and Password
 2. Github as Username and Password
 3. Sonarqube as Secret Text
+
+You Need to give these permission to your github token:
+
+![Github Permission Image](images/github_permission.png)
 
 
 # 🔀 Configure Multibranch Pipeline
@@ -222,6 +231,9 @@ http://<EC2-IP>:9000
 username : admin
 password : admin
 ```
+
+![Sonarqube Login Page Image](images/sonarqube.png)
+
 ---
 
 After this, you can give your own password.
@@ -298,6 +310,12 @@ Token: <your-token>
 
 ---
 
+# ✅ After completing all steps and creating pipeline configuration :
+
+
+![Jenkins Pipeline Build Image](images/jenkins_pipeline.png)
+
+
 
 # 🚀 Install and Configure ArgoCD
 
@@ -340,6 +358,19 @@ http://<EC2-PUBLIC-IP>:8050
 Username: admin
 Password: <output from Step 4>
 ```
+
+![Argocd Login Page Image](images/argocd.png)
+
+# ✅ After adding app in argocd, your deployment look like: 
+
+![Argocd App Image](images/argocd_deployment.jpeg)
+
+
+# ✅ Now you can access our application: 
+
+![Argocd App Image](images/application.png)
+
+
 
 # 🚀 Install and Configure Prometheus & Grafana
 
@@ -396,6 +427,9 @@ nohup kubectl port-forward -n monitoring svc/prometheus-server 9090:80 \
 http://<EC2-PUBLIC-IP>:9090
 ```
 
+![Prometheus Login Page Image](images/prometheus.png)
+
+
 ---
 
 ## 📊 Grafana
@@ -444,6 +478,8 @@ Username: admin
 Password: <output from Step 6>
 ```
 
+![Grafan Login Page Image](images/grafana.png)
+
 ---
 
 ## 🔗 Connect Prometheus as Grafana Data Source
@@ -458,5 +494,9 @@ http://prometheus-server.monitoring.svc.cluster.local
 5. Click **Save & Test** ✅
 
 ---
+
+# ✅ After Adding Dashboard:
+
+![Grafana Dashboard Image](images/grafana_dashboard.png)
 
 
