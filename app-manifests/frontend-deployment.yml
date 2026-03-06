@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: shreepalsingh/crud-dd-task-mean-app-frontend:1.0.16
+          image: shreepalsingh/crud-dd-task-mean-app-frontend:1.0.17
           imagePullPolicy: Always
           ports:
             - containerPort: 80
