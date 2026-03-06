@@ -1,16 +1,90 @@
 # 📌 Pre-Requisites
 
-- Ubuntu EC2 instance
-- Docker installed
-- Security Group ports open:
+## 🏗️ Infrastructure Setup
 
-| Service | Port |
-|--------|-------|
-| Jenkins | 8080 |
-| SonarQube | 9000 |
-| Argocd | 8050 |
-| Prometheus | 9090 |
-| Grafana | 3000 |
+> You can provision the EC2 instance automatically using the Terraform files provided in the `Terraform/` folder instead of creating it manually.
+
+## ⚡ Quick Start with Terraform
+
+### Prerequisites
+- Terraform installed on your local machine
+- AWS CLI configured with your credentials
+
+### Steps
+
+**Step 1 — Navigate to Terraform folder**
+```bash
+cd Terraform/
+```
+
+**Step 2 — Create `terraform.tfvars` file**
+
+> ⚠️ You must create this file before running terraform commands!
+```bash
+touch terraform.tfvars
+```
+
+Add your custom values:
+```hcl
+# terraform.tfvars
+
+# AMI Image ID (Ubuntu)
+ami_value = "<image-id>"
+
+# AWS Key Pair Name
+key_file = "your-key-pair-name"
+
+# EC2 Instance Type
+type = "m7i-flex.large"
+
+# VPC CIDR Block
+cidr_block_vpc = "10.0.0.0/1"
+
+# Subnet CIDR Block
+cidr_block_subnet = "10.0.1.0/24"
+```
+
+**Step 3 — Initialize Terraform**
+```bash
+terraform init
+```
+
+**Step 4 — Preview infrastructure**
+```bash
+terraform plan
+```
+
+**Step 5 — Create EC2 instance**
+```bash
+terraform apply
+```
+
+**Step 6 — Destroy EC2 instance (when done)**
+```bash
+terraform destroy
+```
+
+> ⚠️ Make sure to run `terraform destroy` after you are done to avoid unnecessary AWS charges!
+> 
+
+## 🐳 Install Docker
+
+**Step 1 — Install Docker**
+```bash
+sudo apt update
+sudo apt install -y docker.io
+```
+
+**Step 2 — Add user to Docker group**
+```bash
+sudo usermod -aG docker $USER
+newgrp docker
+```
+
+**Step 4 — Verify Installation**
+```bash
+docker --version
+```
 
 ---
 
