@@ -1,3 +1,6 @@
+![Jenkins Login Page Image](images/flow.png)
+
+
 # 📌 Pre-Requisites
 
 ## 🏗️ Infrastructure Setup
