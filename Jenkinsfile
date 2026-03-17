@@ -5,7 +5,6 @@ pipeline {
     DOCKER_HUB_USER      = "shreepalsingh"
     BACKEND_IMAGE        = "${DOCKER_HUB_USER}/crud-dd-task-mean-app-backend"
     FRONTEND_IMAGE       = "${DOCKER_HUB_USER}/crud-dd-task-mean-app-frontend"
-    SONAR_URL            = "http://44.212.56.60:9000/"
     GIT_REPO_NAME        = "Project-MEAN-Stack-Deployment"
     GIT_USER_NAME        = "shreepal811"
   }
@@ -68,7 +67,7 @@ pipeline {
             -Dsonar.projectKey=mean-app \
             -Dsonar.sources=backend,frontend/src \
             -Dsonar.exclusions=**/node_modules/**,**/dist/** \
-            -Dsonar.host.url=${SONAR_URL} \
+            // -Dsonar.host.url=${SONAR_URL} \    handle by withSonarQubeEnv(jenkins plugin for sonarqube)
             -Dsonar.login=${SONAR_AUTH_TOKEN}
         '''
       }
